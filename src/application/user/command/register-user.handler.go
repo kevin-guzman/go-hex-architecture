@@ -15,11 +15,11 @@ func NewHandlerRegisterUser(sru *service.ServiceRegisterUser) *HandlerRegisterUs
 	}
 }
 
-func (hru *HandlerRegisterUser) Run(commandRU CommandRegisterUser) (string, error) {
+func (hru *HandlerRegisterUser) Run(commandRU CommandRegisterUser) (string, error, int) {
 	user, err := model.NewUser(commandRU.Name, commandRU.Password, commandRU.CreationDate)
 	if err != nil {
-		return "", err
+		return "", err, 500
 	}
-	message, err := hru.serviceRegisterUser.Run(*user)
-	return message, err
+	message, err, status := hru.serviceRegisterUser.Run(*user)
+	return message, err, status
 }

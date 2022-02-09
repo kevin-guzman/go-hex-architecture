@@ -18,7 +18,7 @@ func NewControllerUser(hru command.HandlerRegisterUser, hlu query.HandlerListUse
 	}
 }
 
-func (cu *ControllerUser) Create(command command.CommandRegisterUser) (string, error) {
+func (cu *ControllerUser) Create(command command.CommandRegisterUser) (string, error, int) {
 	return cu.handlerRegisterUser.Run(command)
 }
 

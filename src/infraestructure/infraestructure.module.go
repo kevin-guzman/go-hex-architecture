@@ -8,21 +8,25 @@ import (
 
 	"log"
 
-	toy "github.com/bigpigeon/toyorm"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-var dbConnection *toy.Toy
+var dbConnection *gorm.DB
 var once sync.Once
 
 func InitInfraestructure(router *gin.Engine) {
 
 	once.Do(func() {
-		conn, err := toy.Open("postgres", "user=postgres dbname=toyorm_example sslmode=disable")
+		dsn := "host=localhost user=go password=go dbname=golanghex port=5432 sslmode=disable"
+		conn, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		// defer conn.Cl()
+
 		if err != nil {
 			log.Fatal("Error with db connection", err)
 		}
-		dbConnection = conn
 
-		provider.UserProvider(*dbConnection, router)
+		dbConnection = conn
+		provider.UserProvider(dbConnection, router)
 	})
 }

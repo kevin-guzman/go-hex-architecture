@@ -5,32 +5,31 @@ import (
 	"golang-gingonic-hex-architecture/src/domain/user/model"
 	"golang-gingonic-hex-architecture/src/infraestructure/user/entity"
 
-	toy "github.com/bigpigeon/toyorm"
+	"gorm.io/gorm"
 )
 
 type RepositoryUserPostgreSql struct {
-	userRepository *toy.ToyBrick
+	userRepository *gorm.DB
 }
 
-func NewRepositoryUserPostgreSql(conn toy.Toy) *RepositoryUserPostgreSql {
+func NewRepositoryUserPostgreSql(conn *gorm.DB) *RepositoryUserPostgreSql {
 	return &RepositoryUserPostgreSql{
 		userRepository: conn.Model(&entity.User{}),
 	}
 }
 
 func (rup *RepositoryUserPostgreSql) Save(user model.User) error {
-	_, err := rup.userRepository.Insert(&user)
-	return err
+	entity := entity.User{Name: user.Name, Password: user.Password, Creation_date: user.Creation_date}
+	result := rup.userRepository.Create(&entity)
+	return result.Error
 }
 
 func (rup *RepositoryUserPostgreSql) ExistUserName(name string) (bool, error) {
-	var user bool = false
-	finded, err := rup.userRepository.Where(toy.ExprEqual, "name", name).Find(&user)
-	if err != nil {
-		return true, err
+	var user model.User
+	var count int64 = 0
+	result := rup.userRepository.Find(&user, "name = ?", name).Count(&count)
+	if result.Error != nil {
+		return false, result.Error
 	}
-	if resultErr := finded.Err(); resultErr != nil {
-		return true, resultErr
-	}
-	return user == false, nil
+	return count > 0, nil
 }

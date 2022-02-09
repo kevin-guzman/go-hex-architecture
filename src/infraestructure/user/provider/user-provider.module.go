@@ -12,11 +12,11 @@ import (
 	query "golang-gingonic-hex-architecture/src/application/user/query"
 	infraestructureService "golang-gingonic-hex-architecture/src/infraestructure/user/provider/service"
 
-	toy "github.com/bigpigeon/toyorm"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-func UserProvider(conn toy.Toy, router *gin.Engine) {
+func UserProvider(conn *gorm.DB, router *gin.Engine) {
 	repositoryUser := repository.GetRepositoryUser(conn)
 	daoUser := dao.GetDaoUser(conn)
 
@@ -29,10 +29,10 @@ func UserProvider(conn toy.Toy, router *gin.Engine) {
 	{
 		user.POST("/", func(c *gin.Context) {
 			command := command.CommandRegisterUser{Name: "wey", Password: "12345543", CreationDate: time.Now()}
-			msg, err := controller.Create(command)
-			c.JSON(200, gin.H{
+			msg, err, status := controller.Create(command)
+			c.JSON(status, gin.H{
 				"message": msg,
-				"error":   err,
+				"error":   err.Error(),
 			})
 		})
 		user.GET("/", func(c *gin.Context) {

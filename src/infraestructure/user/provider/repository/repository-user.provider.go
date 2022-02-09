@@ -7,13 +7,13 @@ import (
 	classRepository "golang-gingonic-hex-architecture/src/infraestructure/user/adaptor/repository"
 	"sync"
 
-	toy "github.com/bigpigeon/toyorm"
+	"gorm.io/gorm"
 )
 
 var once sync.Once
 var instance *interfaceRepository.RepositoryUser
 
-func GetRepositoryUser(conn toy.Toy) *interfaceRepository.RepositoryUser {
+func GetRepositoryUser(conn *gorm.DB) *interfaceRepository.RepositoryUser {
 	once.Do(func() {
 		ru := classRepository.NewRepositoryUserPostgreSql(conn)
 		iru := interfaceRepository.RepositoryUser(ru)

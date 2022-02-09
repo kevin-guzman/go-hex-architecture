@@ -7,13 +7,13 @@ import (
 	classDao "golang-gingonic-hex-architecture/src/infraestructure/user/adaptor/dao"
 	"sync"
 
-	toy "github.com/bigpigeon/toyorm"
+	"gorm.io/gorm"
 )
 
 var once sync.Once
 var instance *interfaceDao.DaoUser
 
-func GetDaoUser(conn toy.Toy) *interfaceDao.DaoUser {
+func GetDaoUser(conn *gorm.DB) *interfaceDao.DaoUser {
 	once.Do(func() {
 		ru := classDao.NewDaoUserPostgreSql(conn)
 		iru := interfaceDao.DaoUser(ru)

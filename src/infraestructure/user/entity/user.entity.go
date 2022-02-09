@@ -3,7 +3,7 @@ package entity
 import (
 	"time"
 
-	"github.com/bigpigeon/toyorm"
+	"gorm.io/gorm"
 )
 
 // type Password string
@@ -13,9 +13,9 @@ import (
 // }
 
 type User struct {
-	toyorm.ModelDefault
-	id            int `toyorm:"primary key;auto_increment"`
-	name          string
-	password      string
-	creation_date time.Time
+	gorm.Model
+	Id            int `gorm:"primaryKey"`
+	Name          string
+	Password      string
+	Creation_date time.Time
 }
