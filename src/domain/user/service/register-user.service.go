@@ -22,7 +22,6 @@ func (sru *ServiceRegisterUser) Run(user model.User) (string, error, int) {
 		return "", err, 500
 
 	}
-	fmt.Println("ex", existUserName, err)
 	if existUserName {
 		return "", fmt.Errorf("The username %s already exist", user.Name), 500
 	}

@@ -1,9 +1,9 @@
 package repository
 
-// "golang-gingonic-hex-architecture/src/domain/user/port/repository"
 import (
 	"golang-gingonic-hex-architecture/src/domain/user/model"
 	"golang-gingonic-hex-architecture/src/infraestructure/user/entity"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -19,7 +19,7 @@ func NewRepositoryUserPostgreSql(conn *gorm.DB) *RepositoryUserPostgreSql {
 }
 
 func (rup *RepositoryUserPostgreSql) Save(user model.User) error {
-	entity := entity.User{Name: user.Name, Password: user.Password, Creation_date: user.Creation_date}
+	entity := entity.User{Name: user.Name, Password: user.Password, Creation_date: time.Now()}
 	result := rup.userRepository.Create(&entity)
 	return result.Error
 }

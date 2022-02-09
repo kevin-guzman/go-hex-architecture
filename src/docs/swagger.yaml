@@ -1,0 +1,61 @@
+definitions:
+  command.CommandRegisterUser:
+    properties:
+      CreationDate:
+        type: string
+      Name:
+        type: string
+      Password:
+        minLength: 6
+        type: string
+    type: object
+  response.ResponseModel:
+    properties:
+      data: {}
+      error:
+        type: string
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /user:
+    get:
+      consumes:
+      - application/json
+      description: Get all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      summary: Get users
+      tags:
+      - user
+    post:
+      consumes:
+      - application/json
+      description: Enpoint to create a user
+      parameters:
+      - description: create user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/command.CommandRegisterUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      summary: Create user
+      tags:
+      - user
+swagger: "2.0"

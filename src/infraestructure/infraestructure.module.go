@@ -20,7 +20,7 @@ func InitInfraestructure(router *gin.Engine) {
 	once.Do(func() {
 		dsn := "host=localhost user=go password=go dbname=golanghex port=5432 sslmode=disable"
 		conn, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-		// defer conn.Cl()
+		conn = conn.Debug()
 
 		if err != nil {
 			log.Fatal("Error with db connection", err)
