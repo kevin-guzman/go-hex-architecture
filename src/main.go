@@ -2,11 +2,12 @@ package main
 
 import (
 	"log"
+	"os"
 
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	_ "golang-gingonic-hex-architecture/src/docs"
+	doc "golang-gingonic-hex-architecture/src/docs"
 
 	"golang-gingonic-hex-architecture/src/infraestructure"
 
@@ -14,18 +15,26 @@ import (
 )
 
 func main() {
+	PORT := os.Getenv("PORT")
+	CONTEXT_PATH := os.Getenv("CONTEXT_PATH")
+	if PORT == "" {
+		PORT = ":8080"
+	} else {
+		PORT = ":" + PORT
+	}
+	if CONTEXT_PATH == "" {
+		CONTEXT_PATH = "api/v1"
+	}
+	doc.SwaggerInfo_swagger.BasePath = "/" + CONTEXT_PATH
 	server := gin.Default()
-	// r := server
-	// docs.Sp
+	path := server.Group(CONTEXT_PATH)
+	{
+		infraestructure.InitInfraestructure(path)
+		url := ginSwagger.URL("http://localhost" + PORT + "/" + CONTEXT_PATH + "/swagger/doc.json")
+		path.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
+	}
 
-	infraestructure.InitInfraestructure(server)
-
-	// server.GET("/", HealthCheck)
-
-	url := ginSwagger.URL("http://localhost:8081/swagger/doc.json")
-	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
-
-	if err := server.Run(":8081"); err != nil {
+	if err := server.Run(PORT); err != nil {
 		log.Fatal(err)
 	}
 

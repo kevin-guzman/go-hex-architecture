@@ -2,6 +2,7 @@ package infraestructure
 
 import (
 	"golang-gingonic-hex-architecture/src/infraestructure/user/provider"
+	"os"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -15,11 +16,11 @@ import (
 var dbConnection *gorm.DB
 var once sync.Once
 
-func InitInfraestructure(router *gin.Engine) {
+func InitInfraestructure(router *gin.RouterGroup) {
 
 	once.Do(func() {
-		dsn := "host=localhost user=go password=go dbname=golanghex port=5432 sslmode=disable"
-		conn, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		DATABSE_STRING_CONNECTION := os.Getenv("DB")
+		conn, err := gorm.Open(postgres.Open(DATABSE_STRING_CONNECTION), &gorm.Config{})
 		conn = conn.Debug()
 
 		if err != nil {

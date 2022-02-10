@@ -19,7 +19,7 @@ import (
 var controllerInstance *controller.ControllerUser
 var once sync.Once
 
-func UserProvider(conn *gorm.DB, router *gin.Engine) {
+func UserProvider(conn *gorm.DB, router *gin.RouterGroup) {
 	once.Do(func() {
 		repositoryUser := repository.GetRepositoryUser(conn)
 		daoUser := dao.GetDaoUser(conn)
