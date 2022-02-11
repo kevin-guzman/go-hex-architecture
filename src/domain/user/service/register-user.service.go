@@ -20,7 +20,6 @@ func (sru *ServiceRegisterUser) Run(user model.User) (string, error, int) {
 	existUserName, err := sru.userRepository.ExistUserName(user.Name)
 	if err != nil {
 		return "", err, 500
-
 	}
 	if existUserName {
 		return "", fmt.Errorf("The username %s already exist", user.Name), 500

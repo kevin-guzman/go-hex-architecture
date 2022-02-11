@@ -16,18 +16,17 @@ import (
 var dbConnection *gorm.DB
 var once sync.Once
 
-func InitInfraestructure(router *gin.RouterGroup) {
+var InitInfraestructure = func(router *gin.RouterGroup) {
 
 	once.Do(func() {
 		DATABSE_STRING_CONNECTION := os.Getenv("DB")
 		conn, err := gorm.Open(postgres.Open(DATABSE_STRING_CONNECTION), &gorm.Config{})
-		conn = conn.Debug()
+		dbConnection = conn.Debug()
 
 		if err != nil {
-			log.Fatal("Error with db connection", err)
+			log.Println("Error with db connection", err)
 		}
 
-		dbConnection = conn
 		provider.UserProvider(dbConnection, router)
 	})
 }

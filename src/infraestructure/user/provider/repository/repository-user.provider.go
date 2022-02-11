@@ -11,7 +11,7 @@ import (
 var once sync.Once
 var instance *interfaceRepository.RepositoryUser
 
-func GetRepositoryUser(conn *gorm.DB) *interfaceRepository.RepositoryUser {
+var GetRepositoryUser = func(conn *gorm.DB) *interfaceRepository.RepositoryUser {
 	once.Do(func() {
 		ru := classRepository.NewRepositoryUserPostgreSql(conn)
 		iru := interfaceRepository.RepositoryUser(ru)

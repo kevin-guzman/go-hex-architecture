@@ -11,7 +11,7 @@ import (
 var once sync.Once
 var instance *interfaceDao.DaoUser
 
-func GetDaoUser(conn *gorm.DB) *interfaceDao.DaoUser {
+var GetDaoUser = func(conn *gorm.DB) *interfaceDao.DaoUser {
 	once.Do(func() {
 		ru := classDao.NewDaoUserPostgreSql(conn)
 		iru := interfaceDao.DaoUser(ru)
