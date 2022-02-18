@@ -13,17 +13,24 @@ type MockDaoUser struct {
 }
 
 func (m *MockDaoUser) List() []*dto.UserDto {
-	_mc_ret := m.Called()
+	// _mc_ret := m.Called()
 
-	var _r0 []*dto.UserDto
+	// var _r0 []*dto.UserDto
 
-	if _rfn, ok := _mc_ret.Get(0).(func() []*dto.UserDto); ok {
-		_r0 = _rfn()
-	} else {
-		if _mc_ret.Get(0) != nil {
-			_r0 = _mc_ret.Get(0).([]*dto.UserDto)
-		}
+	// if _rfn, ok := _mc_ret.Get(0).(func() []*dto.UserDto); ok {
+	// 	_r0 = _rfn()
+	// } else {
+	// 	if _mc_ret.Get(0) != nil {
+	// 		_r0 = _mc_ret.Get(0).([]*dto.UserDto)
+	// 	}
+	// }
+
+	// return _r0
+	args := m.Called()
+	var returned []*dto.UserDto
+	if len(args) > 1 {
+		returned = args.Get(0).([]*dto.UserDto)
 	}
+	return returned
 
-	return _r0
 }

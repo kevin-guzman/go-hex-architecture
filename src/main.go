@@ -1,30 +1,27 @@
 package main
 
 import (
-	"log"
 	"os"
 
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
+	"log"
 
 	doc "golang-gingonic-hex-architecture/src/docs"
-
 	"golang-gingonic-hex-architecture/src/infraestructure"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func main() {
-	PORT := os.Getenv("PORT")
+	path_env := "./env/development.env"
+	if err := godotenv.Load(path_env); err != nil {
+		log.Fatal("Error reading .env file\n", err)
+	}
+
+	PORT := os.Getenv("APPLICATION_PORT")
 	CONTEXT_PATH := os.Getenv("CONTEXT_PATH")
-	if PORT == "" {
-		PORT = ":8080"
-	} else {
-		PORT = ":" + PORT
-	}
-	if CONTEXT_PATH == "" {
-		CONTEXT_PATH = "api/v1"
-	}
 	doc.SwaggerInfo_swagger.BasePath = "/" + CONTEXT_PATH
 	server := gin.Default()
 	path := server.Group(CONTEXT_PATH)
@@ -35,7 +32,7 @@ func main() {
 	}
 
 	if err := server.Run(PORT); err != nil {
-		log.Fatal(err)
+		log.Fatal("Error running the server", err)
 	}
 
 }

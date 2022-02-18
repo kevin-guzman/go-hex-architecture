@@ -6,47 +6,53 @@ import (
 	"golang-gingonic-hex-architecture/tests/utils/mocks"
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
-func TestServiceSuccessCretionOfUser(t *testing.T) {
-	assert := require.New(t)
+var (
+	repositoryUser mocks.MockRepositoryUser
+	usr            = model.User{Name: "Juan"}
+	t              *testing.T
+)
 
-	repositoryUser := &mocks.MockRepositoryUser{}
-	repositoryUser.On("ExistUserName").Return(false, nil)
-	repositoryUser.On("Save").Return(nil)
+var _ = Describe("Service create user", func() {
+	BeforeEach(func() {
+		repositoryUser = mocks.MockRepositoryUser{}
+		t = tReference
+	})
 
-	usr := model.User{Name: "Juan"}
-	serviceRegisterUserStub := service.NewServiceRegisterUser(repositoryUser)
-	msg, err, code := serviceRegisterUserStub.Run(usr)
+	It("Should create a user", func() {
+		repositoryUser.On("ExistUserName", usr.Name).Return(false, nil)
+		repositoryUser.On("Save", usr).Return(nil)
 
-	repositoryUser.AssertNumberOfCalls(t, "ExistUserName", 1)
-	repositoryUser.AssertCalled(t, "ExistUserName")
-	repositoryUser.AssertNumberOfCalls(t, "Save", 1)
-	repositoryUser.AssertCalled(t, "Save")
-	repositoryUser.AssertExpectations(t)
+		serviceRegisterUserStub := service.NewServiceRegisterUser(&repositoryUser)
+		msg, err, code := serviceRegisterUserStub.Run(usr)
 
-	assert.True(msg == "User has succesfully created!")
-	assert.True(err == nil)
-	assert.True(code == 200)
-}
+		repositoryUser.AssertNumberOfCalls(tReference, "ExistUserName", 1)
+		repositoryUser.AssertCalled(t, "ExistUserName", usr.Name)
+		repositoryUser.AssertNumberOfCalls(t, "Save", 1)
+		repositoryUser.AssertCalled(t, "Save", usr)
+		repositoryUser.AssertExpectations(t)
 
-func TestServiceIfAlreadyExistUser(t *testing.T) {
-	assert := require.New(t)
+		Expect(msg).To(Equal("User has succesfully created!"))
+		Expect(err).To(BeNil())
+		Expect(code).To(BeIdenticalTo(200))
+	})
 
-	repositoryUser := &mocks.MockRepositoryUser{}
-	repositoryUser.On("ExistUserName").Return(true, nil)
-	repositoryUser.On("Save").Return(nil)
+	It("If user already exists", func() {
+		repositoryUser.On("ExistUserName", usr.Name).Return(true, nil)
+		repositoryUser.On("Save").Return(nil)
 
-	usr := model.User{Name: "Juan"}
-	serviceRegisterUserStub := service.NewServiceRegisterUser(repositoryUser)
-	msg, err, code := serviceRegisterUserStub.Run(usr)
+		serviceRegisterUserStub := service.NewServiceRegisterUser(&repositoryUser)
+		msg, err, code := serviceRegisterUserStub.Run(usr)
 
-	repositoryUser.AssertNumberOfCalls(t, "ExistUserName", 1)
-	repositoryUser.AssertCalled(t, "ExistUserName")
-	repositoryUser.AssertNumberOfCalls(t, "Save", 0)
+		repositoryUser.AssertNumberOfCalls(t, "ExistUserName", 1)
+		repositoryUser.AssertCalled(t, "ExistUserName", usr.Name)
+		repositoryUser.AssertNumberOfCalls(t, "Save", 0)
 
-	assert.True(msg == "")
-	assert.True(err.Error() == "The username "+usr.Name+" already exist")
-	assert.True(code == 500)
-}
+		Expect(msg).To(Equal(""))
+		Expect(err.Error()).To(Equal("The username " + usr.Name + " already exist"))
+		Expect(code).To(BeIdenticalTo(500))
+	})
+})
