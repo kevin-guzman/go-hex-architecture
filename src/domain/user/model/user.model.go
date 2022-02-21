@@ -5,7 +5,10 @@ import (
 	"time"
 )
 
-const MIN_PASSWORD_LENGTH = 6
+const (
+	MIN_PASSWORD_LENGTH int    = 6
+	ERR_LENGTH          string = "The leng of the password is incorrect"
+)
 
 type User struct {
 	Name          string
@@ -15,7 +18,7 @@ type User struct {
 
 func NewUser(name, password string, creation_date time.Time) (*User, error) {
 	if len(password) < MIN_PASSWORD_LENGTH {
-		return nil, fmt.Errorf("The leng of the password is incorrect")
+		return nil, fmt.Errorf(ERR_LENGTH)
 	}
 	return &User{
 		Name:          name,

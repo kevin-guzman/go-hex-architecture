@@ -1,6 +1,7 @@
 package service_test
 
 import (
+	"golang-gingonic-hex-architecture/src/domain/errors"
 	"golang-gingonic-hex-architecture/src/domain/user/model"
 	"golang-gingonic-hex-architecture/src/domain/user/service"
 	"golang-gingonic-hex-architecture/tests/utils/mocks"
@@ -17,9 +18,19 @@ var (
 )
 
 var _ = Describe("Service create user", func() {
+	BeforeSuite(func() {
+		t = tReference
+		errors.NewErrorCore = func(err error, trace, message string) *errors.ErrorCore {
+			return &errors.ErrorCore{
+				Err:     err,
+				Trace:   trace,
+				Message: message,
+			}
+		}
+	})
+
 	BeforeEach(func() {
 		repositoryUser = mocks.MockRepositoryUser{}
-		t = tReference
 	})
 
 	It("Should create a user", func() {
