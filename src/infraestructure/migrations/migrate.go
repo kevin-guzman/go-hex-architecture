@@ -2,7 +2,7 @@ package main
 
 import (
 	"golang-gingonic-hex-architecture/src/infraestructure"
-	"golang-gingonic-hex-architecture/src/infraestructure/user/entity"
+	userEntity "golang-gingonic-hex-architecture/src/infraestructure/user/entity"
 	"log"
 	"os"
 
@@ -43,10 +43,18 @@ func Migrate() {
 		log.Fatal("Error connecting to db", err)
 	}
 
-	err = conn.AutoMigrate(&entity.User{})
-	if err != nil {
-		log.Fatal("Error doing the migration", err)
+	entities := map[string]interface{}{
+		"user": &userEntity.User{},
 	}
+
+	for name, entity := range entities {
+		err = conn.AutoMigrate(entity)
+		if err != nil {
+			log.Fatal("Error migrating the: ", name, "entity ", err)
+			break
+		}
+	}
+
 	log.Println("Finished")
 }
 

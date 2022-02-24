@@ -27,17 +27,17 @@ func NewServiceRegisterUser(UserR repository.RepositoryUser) *ServiceRegisterUse
 func (sru *ServiceRegisterUser) Run(user model.User) (string, error, int) {
 	existUserName, err := sru.userRepository.ExistUserName(user.Name)
 	if err != nil {
-		return "", err, 500
+		return "", errors.NewErrorCore(err, errTrace, "Service error").PublicError(), http.StatusInternalServerError
 	}
 	if existUserName {
 		err := fmt.Errorf("The username %s already exist", user.Name)
-		return "", errors.NewErrorCore(err, errTrace, err.Error()).PublicError(), 500
+		return "", errors.NewErrorCore(err, errTrace, err.Error()).PublicError(), http.StatusInternalServerError
 	}
 
 	err = sru.userRepository.Save(user)
 	if err != nil {
 		fmt.Println(errTrace)
-		return "", errors.NewErrorCore(err, errTrace, internalError).PublicError(), 500
+		return "", errors.NewErrorCore(err, errTrace, internalError).PublicError(), http.StatusInternalServerError
 	}
 
 	return successMessage, nil, http.StatusOK
