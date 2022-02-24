@@ -61,6 +61,7 @@ var _ = Describe("Service create user", func() {
 		repositoryUser.AssertNumberOfCalls(t, "ExistUserName", 1)
 		repositoryUser.AssertCalled(t, "ExistUserName", usr.Name)
 		repositoryUser.AssertNumberOfCalls(t, "Save", 0)
+		repositoryUser.AssertExpectations(t)
 
 		Expect(msg).To(Equal(""))
 		Expect(err.Error()).To(Equal("The username " + usr.Name + " already exist"))
