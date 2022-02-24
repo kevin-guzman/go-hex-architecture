@@ -53,7 +53,6 @@ var _ = Describe("Service create user", func() {
 
 	It("If user already exists", func() {
 		repositoryUser.On("ExistUserName", usr.Name).Return(true, nil)
-		repositoryUser.On("Save").Return(nil)
 
 		serviceRegisterUserStub := service.NewServiceRegisterUser(&repositoryUser)
 		msg, err, code := serviceRegisterUserStub.Run(usr)
