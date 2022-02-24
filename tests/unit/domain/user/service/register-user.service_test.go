@@ -40,7 +40,7 @@ var _ = Describe("Service create user", func() {
 		serviceRegisterUserStub := service.NewServiceRegisterUser(&repositoryUser)
 		msg, err, code := serviceRegisterUserStub.Run(usr)
 
-		repositoryUser.AssertNumberOfCalls(tReference, "ExistUserName", 1)
+		repositoryUser.AssertNumberOfCalls(t, "ExistUserName", 1)
 		repositoryUser.AssertCalled(t, "ExistUserName", usr.Name)
 		repositoryUser.AssertNumberOfCalls(t, "Save", 1)
 		repositoryUser.AssertCalled(t, "Save", usr)
