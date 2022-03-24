@@ -9,6 +9,8 @@ import (
 	"golang-gingonic-hex-architecture/src/application/user/command"
 	"golang-gingonic-hex-architecture/src/application/user/query/dto"
 	"golang-gingonic-hex-architecture/src/infraestructure"
+	"golang-gingonic-hex-architecture/src/infraestructure/configuration"
+	"golang-gingonic-hex-architecture/src/infraestructure/exceptions"
 	"golang-gingonic-hex-architecture/src/infraestructure/user/provider"
 	"golang-gingonic-hex-architecture/src/infraestructure/user/provider/dao"
 
@@ -44,7 +46,7 @@ var (
 	server         *gin.Engine
 	context        *gin.Context
 	t              *testing.T
-	expected, got  gin.H
+	expected, got  interface{}
 )
 
 var _ = Describe("Tests of the user controller", func() {
@@ -59,11 +61,12 @@ var _ = Describe("Tests of the user controller", func() {
 
 	BeforeSuite(func() {
 		t = tReference
-		errors.NewErrorCore = func(err error, trace, message string) *errors.ErrorCore {
+		errors.NewErrorCore = func(err error, trace, message string, status int) *errors.ErrorCore {
 			return &errors.ErrorCore{
 				Err:     err,
 				Trace:   trace,
 				Message: message,
+				Status:  status,
 			}
 		}
 		dao.GetDaoUser = func(conn *gorm.DB) *interfaceDao.DaoUser {
@@ -93,6 +96,8 @@ var _ = Describe("Tests of the user controller", func() {
 		}
 		gin.SetMode(gin.TestMode)
 		context, server = gin.CreateTestContext(httptest.NewRecorder())
+		logger := configuration.NewAppLogger()
+		server.Use(exceptions.ErrorHandler(logger))
 		path_env := "../../../../env/testing.env"
 		if err := godotenv.Load(path_env); err != nil {
 			log.Fatal("Error reading .env file\n", err)
@@ -105,12 +110,7 @@ var _ = Describe("Tests of the user controller", func() {
 	It("Should list the registered users", func() {
 		users := []*dto.UserDto{{Name: "name", Creation_date: time.Now()}}
 		utils.JSONParse(
-			gin.H{
-				"data":    users,
-				"status":  200,
-				"error":   "",
-				"message": "",
-			},
+			users,
 			&expected,
 		)
 		daoUser.On("List").Return(users)
@@ -136,11 +136,11 @@ var _ = Describe("Tests of the user controller", func() {
 		userBytes, _ := json.Marshal(user)
 		const message string = "The leng of the password is incorrect"
 		utils.JSONParse(
-			gin.H{
-				"data":    nil,
-				"status":  500,
-				"error":   message,
-				"message": "",
+			map[string]interface{}{
+				"statusCode": http.StatusBadRequest,
+				"timestamp":  time.Now().Format("2006-01-02T15:04:05-0700"),
+				"path":       "/api/v1/user/",
+				"message":    message,
 			},
 			&expected,
 		)
@@ -151,12 +151,11 @@ var _ = Describe("Tests of the user controller", func() {
 
 		err := json.Unmarshal(w.Body.Bytes(), &got)
 		if err != nil {
-			log.Fatal("Error on unmarsall reponse pas", err)
+			log.Fatal("Error on unmarsall reponse ", err)
 		}
 
-		Expect(w.Code).To(BeNumerically("==", http.StatusInternalServerError))
+		Expect(w.Code).To(BeNumerically("==", http.StatusBadRequest))
 		Expect(expected).To(Equal(got))
-		Expect(got["error"]).To(Equal(message))
 	})
 
 	It("Should fail because the user has already exist", func() {
@@ -164,11 +163,11 @@ var _ = Describe("Tests of the user controller", func() {
 		userBytes, _ := json.Marshal(user)
 		var message string = "The username " + user.Name + " already exist"
 		utils.JSONParse(
-			gin.H{
-				"data":    nil,
-				"status":  500,
-				"error":   message,
-				"message": "",
+			map[string]interface{}{
+				"statusCode": http.StatusInternalServerError,
+				"timestamp":  time.Now().Format("2006-01-02T15:04:05-0700"),
+				"path":       "/api/v1/user/",
+				"message":    message,
 			},
 			&expected,
 		)
@@ -185,7 +184,6 @@ var _ = Describe("Tests of the user controller", func() {
 
 		Expect(w.Code).To(BeNumerically("==", http.StatusInternalServerError))
 		Expect(expected).To(Equal(got))
-		Expect(got["error"]).To(Equal(message))
 
 		repositoryUser.AssertCalled(t, "ExistUserName", user.Name)
 		repositoryUser.AssertNumberOfCalls(t, "ExistUserName", 1)
