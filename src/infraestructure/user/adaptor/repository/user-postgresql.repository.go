@@ -25,9 +25,10 @@ func (rup *RepositoryUserPostgreSql) Save(user model.User) error {
 }
 
 func (rup *RepositoryUserPostgreSql) ExistUserName(name string) (bool, error) {
-	var user model.User
 	var count int64 = 0
-	result := rup.userRepository.Find(&user, "name = ?", name).Count(&count)
+
+	result := rup.userRepository.Raw("SELECT * FROM users u WHERE name = ? AND u.deleted_at IS NULL ORDER BY u.id LIMIT 1", name).Count(&count)
+
 	if result.Error != nil {
 		return false, result.Error
 	}

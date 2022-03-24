@@ -11,14 +11,14 @@ type ControllerUser struct {
 	handlerListUsers    query.HandlerListUsers
 }
 
-func NewControllerUser(hru command.HandlerRegisterUser, hlu query.HandlerListUsers) *ControllerUser {
+func NewControllerUser(handleRegisterUser command.HandlerRegisterUser, handleListUser query.HandlerListUsers) *ControllerUser {
 	return &ControllerUser{
-		handlerRegisterUser: hru,
-		handlerListUsers:    hlu,
+		handlerRegisterUser: handleRegisterUser,
+		handlerListUsers:    handleListUser,
 	}
 }
 
-func (cu *ControllerUser) Create(command command.CommandRegisterUser) (string, error, int) {
+func (cu *ControllerUser) Create(command command.CommandRegisterUser) interface{} {
 	return cu.handlerRegisterUser.Run(command)
 }
 

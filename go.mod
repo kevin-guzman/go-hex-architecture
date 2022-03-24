@@ -1,6 +1,6 @@
 module golang-gingonic-hex-architecture
 
-go 1.17
+go 1.18
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
@@ -12,6 +12,7 @@ require (
 	github.com/swaggo/files v0.0.0-20210815190702-a29dd2bc99b2
 	github.com/swaggo/gin-swagger v1.4.1
 	github.com/swaggo/swag v1.7.9
+	github.com/withmandala/go-log v0.1.0
 	golang.org/x/crypto v0.0.0-20220209155544-dad33157f4bf
 	gorm.io/driver/postgres v1.2.3
 	gorm.io/gorm v1.22.5
@@ -56,6 +57,7 @@ require (
 	github.com/ugorji/go/codec v1.2.6 // indirect
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
 	golang.org/x/sys v0.0.0-20220207234003-57398862261d // indirect
+	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.9 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect

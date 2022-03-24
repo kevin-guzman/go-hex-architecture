@@ -8,15 +8,17 @@ import (
 type ErrorCore struct {
 	Trace, Message string
 	Err            error
+	Status         int
 }
 
-var NewErrorCore = func(err error, trace, message string) *ErrorCore {
+var NewErrorCore = func(err error, trace, message string, status int) *ErrorCore {
 	// TODO notify observer of infra
 	fmt.Println("\nError has courred in \n", trace, "\nThe error is", err)
 	return &ErrorCore{
 		Err:     err,
 		Trace:   trace,
 		Message: message,
+		Status:  status,
 	}
 }
 

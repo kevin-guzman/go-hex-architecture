@@ -24,21 +24,21 @@ func NewServiceRegisterUser(UserR repository.RepositoryUser) *ServiceRegisterUse
 	}
 }
 
-func (sru *ServiceRegisterUser) Run(user model.User) (string, error, int) {
+func (sru *ServiceRegisterUser) Run(user model.User) interface{} {
 	existUserName, err := sru.userRepository.ExistUserName(user.Name)
 	if err != nil {
-		return "", errors.NewErrorCore(err, errTrace, "Service error").PublicError(), http.StatusInternalServerError
+		return errors.NewErrorCore(err, errTrace, "Service error", http.StatusInternalServerError)
 	}
 	if existUserName {
 		err := fmt.Errorf("The username %s already exist", user.Name)
-		return "", errors.NewErrorCore(err, errTrace, err.Error()).PublicError(), http.StatusInternalServerError
+		return errors.NewErrorCore(err, errTrace, err.Error(), http.StatusInternalServerError)
 	}
 
 	err = sru.userRepository.Save(user)
 	if err != nil {
 		fmt.Println(errTrace)
-		return "", errors.NewErrorCore(err, errTrace, internalError).PublicError(), http.StatusInternalServerError
+		return errors.NewErrorCore(err, errTrace, internalError, http.StatusInternalServerError)
 	}
 
-	return successMessage, nil, http.StatusOK
+	return successMessage
 }

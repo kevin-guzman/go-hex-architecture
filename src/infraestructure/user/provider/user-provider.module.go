@@ -1,7 +1,8 @@
 package provider
 
 import (
-	"golang-gingonic-hex-architecture/src/infraestructure/response"
+	_ "golang-gingonic-hex-architecture/src/infraestructure/configuration"
+	"golang-gingonic-hex-architecture/src/infraestructure/exceptions"
 	controller "golang-gingonic-hex-architecture/src/infraestructure/user/controller"
 	dao "golang-gingonic-hex-architecture/src/infraestructure/user/provider/dao"
 	repository "golang-gingonic-hex-architecture/src/infraestructure/user/provider/repository"
@@ -45,21 +46,21 @@ func UserProvider(conn *gorm.DB, router *gin.RouterGroup) {
 // @Accept json
 // @Produce json
 // @Param user body command.CommandRegisterUser true "create user"
-// @Success 200 {object} response.ResponseModel
-// @Failture 400 {object} response.ResponseModel
+// @Success http.StatusOK {object} "User has succesfully created!"
+// @Failture 500 {object} configuration.Error
 // @Router /user [post]
 func CreateUser(c *gin.Context) {
 	var user command.CommandRegisterUser
+
 	if err := c.ShouldBindJSON(&user); err != nil {
-		response.SendError(c, "Invalid data: "+err.Error(), "", http.StatusBadRequest)
+		c.String(http.StatusBadRequest, "Invalid data: "+err.Error())
 		return
 	}
-	msg, err, status := controllerInstance.Create(user)
-	if err != nil {
-		response.SendError(c, err.Error(), msg, status)
-		return
-	}
-	response.SendSucess(c, msg, status, nil)
+	response := controllerInstance.Create(user)
+
+	exceptions.ExceptionAndResponseWrapper(c, response, func() {
+		c.JSON(http.StatusOK, response)
+	})
 }
 
 // Get users
@@ -69,10 +70,10 @@ func CreateUser(c *gin.Context) {
 // @Tags user
 // @Accept json
 // @Produce json
-// @Success 200 {object} response.ResponseModel
-// @Failture 400 {object} response.ResponseModel
+// @Success http.StatusOK {object} dto.UserDto
+// @Failture 500 {object} configuration.Error
 // @Router /user [get]
 func ListUsers(c *gin.Context) {
 	data := controllerInstance.List()
-	response.SendSucess(c, "", 200, data)
+	c.JSON(http.StatusOK, data)
 }

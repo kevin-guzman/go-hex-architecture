@@ -2,8 +2,10 @@ package command
 
 import (
 	"fmt"
+	"golang-gingonic-hex-architecture/src/domain/errors"
 	"golang-gingonic-hex-architecture/src/domain/user/model"
 	"golang-gingonic-hex-architecture/src/domain/user/service"
+	"net/http"
 	"time"
 )
 
@@ -17,15 +19,15 @@ func NewHandlerRegisterUser(sru *service.ServiceRegisterUser) *HandlerRegisterUs
 	}
 }
 
-func (hru *HandlerRegisterUser) Run(commandRU CommandRegisterUser) (string, error, int) {
+func (handleRegisterUser *HandlerRegisterUser) Run(commandRU CommandRegisterUser) interface{} {
 	date, err := time.Parse("2006-01-02T15:04:05Z", commandRU.CreationDate)
 	if err != nil {
-		return "nil", fmt.Errorf("Error formating the date %s", commandRU.CreationDate), 400
+		err := fmt.Errorf("Error formating the date %s", commandRU.CreationDate)
+		return errors.NewErrorCore(err, "", err.Error(), http.StatusBadRequest)
 	}
 	user, err := model.NewUser(commandRU.Name, commandRU.Password, date)
 	if err != nil {
-		return "", err, 500
+		return errors.NewErrorCore(err, "", err.Error(), http.StatusBadRequest)
 	}
-	message, err, status := hru.serviceRegisterUser.Run(*user)
-	return message, err, status
+	return handleRegisterUser.serviceRegisterUser.Run(*user)
 }

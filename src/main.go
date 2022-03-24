@@ -7,6 +7,8 @@ import (
 
 	doc "golang-gingonic-hex-architecture/src/docs"
 	"golang-gingonic-hex-architecture/src/infraestructure"
+	"golang-gingonic-hex-architecture/src/infraestructure/configuration"
+	"golang-gingonic-hex-architecture/src/infraestructure/exceptions"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -44,6 +46,8 @@ func main() {
 	CONTEXT_PATH := os.Getenv("CONTEXT_PATH")
 	doc.SwaggerInfo_swagger.BasePath = "/" + CONTEXT_PATH
 	server := gin.Default()
+	logger := configuration.NewAppLogger()
+	server.Use(exceptions.ErrorHandler(logger))
 	path := server.Group(CONTEXT_PATH)
 	{
 		infraestructure.InitInfraestructure(path)
