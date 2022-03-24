@@ -1,7 +1,6 @@
 package configuration
 
 import (
-	// "fmt"
 	"fmt"
 	"os"
 
@@ -24,6 +23,14 @@ func (al *AppLogger) SetContext(context string) {
 }
 
 func (al *AppLogger) LogError(err Error) {
-	buildedError := fmt.Errorf("\n%s: %s\nStack: %s\nContext: %s\nTrace: %s", err.Name, err.Message, err.Stack, al.Context, err.Trace)
+	buildedError := fmt.Errorf(
+		"\n%s: %s\nStack: %s\nContext: %s\nTrace: This error has occured in %s\nDetails: %s",
+		err.Name,
+		err.Message,
+		err.Stack,
+		al.Context,
+		err.Trace,
+		err.Details,
+	)
 	al.logger.Error(buildedError)
 }

@@ -5,12 +5,10 @@ import (
 	"golang-gingonic-hex-architecture/src/domain/errors"
 	"golang-gingonic-hex-architecture/src/domain/user/model"
 	"golang-gingonic-hex-architecture/src/domain/user/port/repository"
-	"net/http"
 )
 
 var (
-	errTrace       string = "This error has ocurred in register-user.service.go"
-	internalError  string = "Internal server error"
+	errTrace       string = "/src/domain/user/service/register-user.service.go"
 	successMessage string = "User has succesfully created!"
 )
 
@@ -27,17 +25,17 @@ func NewServiceRegisterUser(UserR repository.RepositoryUser) *ServiceRegisterUse
 func (sru *ServiceRegisterUser) Run(user model.User) interface{} {
 	existUserName, err := sru.userRepository.ExistUserName(user.Name)
 	if err != nil {
-		return errors.NewErrorCore(err, errTrace, "Service error", http.StatusInternalServerError)
+		return errors.NewErrorPort(err)
 	}
 	if existUserName {
 		err := fmt.Errorf("The username %s already exist", user.Name)
-		return errors.NewErrorCore(err, errTrace, err.Error(), http.StatusInternalServerError)
+		return errors.NewErrorUserAlreadyExist(err, err.Error())
 	}
 
 	err = sru.userRepository.Save(user)
 	if err != nil {
 		fmt.Println(errTrace)
-		return errors.NewErrorCore(err, errTrace, internalError, http.StatusInternalServerError)
+		return errors.NewErrorPort(err)
 	}
 
 	return successMessage

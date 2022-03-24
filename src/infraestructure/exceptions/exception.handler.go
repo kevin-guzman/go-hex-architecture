@@ -7,7 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const ERROR_TRACE_KEY = "ERROR_TRACE"
+const (
+	ERROR_TRACE_KEY   = "ERROR_TRACE"
+	ERROR_DETAILS_KEY = "ERROR_DETAILS"
+)
 
 func ErrorHandler(logger *configuration.AppLogger) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -23,16 +26,12 @@ func ErrorHandler(logger *configuration.AppLogger) gin.HandlerFunc {
 				Message:    ginErr.Err.Error(),
 			}
 
-			// var messageJSON interface{}
-			// bytes, _ := json.Marshal(message)
-			// json.Unmarshal(bytes, &messageJSON)
-			// fmt.Println("message", message, messageJSON)
-			trace := c.GetString(ERROR_TRACE_KEY)
 			errorMessage := configuration.Error{
 				Name:    "ErrorHandlerMiddleware",
 				Message: ginErr.Err.Error(),
 				Stack:   c.FullPath(),
-				Trace:   trace,
+				Trace:   c.GetString(ERROR_TRACE_KEY),
+				Details: c.GetString(ERROR_DETAILS_KEY),
 			}
 			logger.LogError(errorMessage)
 			c.JSON(c.Writer.Status(), message)

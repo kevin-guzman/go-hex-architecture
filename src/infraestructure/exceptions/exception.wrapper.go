@@ -13,6 +13,7 @@ func ExceptionAndResponseWrapper(c *gin.Context, value interface{}, onSuccess on
 	case *errors.ErrorCore:
 		var err *errors.ErrorCore = value.(*errors.ErrorCore)
 		c.Set(ERROR_TRACE_KEY, err.Trace)
+		c.Set(ERROR_DETAILS_KEY, err.Err.Error())
 		c.AbortWithError(err.Status, err.PublicError())
 	default:
 		onSuccess()

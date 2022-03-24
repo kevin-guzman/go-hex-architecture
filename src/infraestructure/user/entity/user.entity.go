@@ -8,8 +8,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// type Password string
-
 type User struct {
 	gorm.Model
 	Id            int `gorm:"primaryKey"`

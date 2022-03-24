@@ -15,6 +15,6 @@ func NewHandlerListUsers(daoU dao.DaoUser) *HandlerListUsers {
 	}
 }
 
-func (hlu *HandlerListUsers) Run() []*dto.UserDto {
-	return hlu.daoUser.List()
+func (handlerListUsers *HandlerListUsers) Run() []*dto.UserDto {
+	return handlerListUsers.daoUser.List()
 }
